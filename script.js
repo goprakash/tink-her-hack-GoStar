@@ -1,135 +1,66 @@
-const form = document.getElementById("loginForm");
+import { auth, db } from "./firebase.js";
+import { 
+    collection, 
+    addDoc, 
+    onSnapshot, 
+    query, 
+    where, 
+    deleteDoc, 
+    doc 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-if (form) {
-    form.addEventListener("submit", async function (e) {
-        e.preventDefault();
+// --- Functions ---
 
-        console.log("Login clicked");
+// 1. Add a new Task
+window.addTodo = async function() {
+    const todoInput = document.getElementById("todoText");
+    const taskName = todoInput.value.trim();
+    const user = auth.currentUser;
 
-        const username = document.querySelector("input[name='username']").value;
-        const password = document.querySelector("input[name='password']").value;
+    if (taskName === "") return alert("Please enter a task!");
+    if (!user) return alert("You must be logged in!");
 
-        try {
-            const response = await
+    try {
+        await addDoc(collection(db, "todos"), {
+            text: taskName,
+            userId: user.uid,
+            createdAt: new Date()
+        });
+        todoInput.value = ""; // Clear input
+    } catch (error) {
+        console.error("Error adding task: ", error);
+    }
+};
 
-                console.log("Response status:", response.status);
+// 2. Delete a Task
+window.deleteTodo = async function(id) {
+    try {
+        await deleteDoc(doc(db, "todos", id));
+    } catch (error) {
+        console.error("Error deleting task: ", error);
+    }
+};
 
-            const data = await response.json();
-            console.log("Server returned:", data);
+// 3. Listen for Real-time Updates
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        const q = query(collection(db, "todos"), where("userId", "==", user.uid));
+        
+        // This updates the list automatically whenever the database changes
+        onSnapshot(q, (snapshot) => {
+            const todoList = document.getElementById("todoList");
+            todoList.innerHTML = ""; // Clear current list
 
-            if (data.token) {
-                console.log("Redirecting...");
-                localStorage.setItem("token", data.token);
-                window.location.href = "home.html";
-            } else {
-                alert("Invalid username or password");
-            }
-
-        } catch (err) {
-            console.error("Error:", err);
-            alert("Backend not reachable");
-        }
-    });
-}
-
-let streak = 0;
-
-function updateStreak() {
-    const todos = document.querySelectorAll(".todo-item");
-    const completed = document.querySelectorAll(".todo-item.completed");
-
-    if (todos.length > 0 && todos.length === completed.length) {
-        streak++;
-        document.getElementById("streakCount").textContent = streak;
-
-        // Prevent double counting
-        todos.forEach(todo => {
-            todo.classList.add("counted");
+            snapshot.forEach((doc) => {
+                const todo = doc.data();
+                const todoDiv = document.createElement("div");
+                todoDiv.className = "todo-item";
+                todoDiv.innerHTML = `
+                    <span>${todo.text}</span>
+                    <button onclick="deleteTodo('${doc.id}')">Done</button>
+                `;
+                todoList.appendChild(todoDiv);
+            });
         });
     }
-}
-
-function addTodo() {
-    const input = document.getElementById("todoText");
-    const text = input.value.trim();
-    if (text === "") return;
-
-    const todoList = document.getElementById("todoList");
-
-    const item = document.createElement("div");
-    item.className = "todo-item";
-
-    item.innerHTML = `
-        <span>${text}</span>
-        <div class="todo-actions">
-            <button onclick="toggleComplete(this)">✔</button>
-            <button onclick="deleteTodo(this)">🗑</button>
-        </div>
-    `;
-
-    todoList.appendChild(item);
-    input.value = "";
-}
-
-function toggleComplete(button) {
-    const item = button.closest(".todo-item");
-    item.classList.toggle("completed");
-
-    updateStreak();
-}
-
-function deleteTodo(button) {
-    button.closest(".todo-item").remove();
-}
-
-const db = getFirestore();
-
-async function updateDailyStreak() {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const userRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(userRef);
-
-    const today = new Date().toISOString().split("T")[0];
-
-    if (!docSnap.exists()) return;
-
-    let { streak, lastCompletedDate } = docSnap.data();
-
-    if (lastCompletedDate === today) {
-        return; // already counted today
-    }
-
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split("T")[0];
-
-    if (lastCompletedDate === yesterdayStr) {
-        streak += 1;
-    } else {
-        streak = 1; // reset streak
-    }
-
-    await updateDoc(userRef, {
-        streak,
-        lastCompletedDate: today
-    });
-
-    document.getElementById("streakCount").textContent = streak;
-}
-
-function checkAllCompleted() {
-    const todos = document.querySelectorAll(".todo-item");
-    const completed = document.querySelectorAll(".todo-item.completed");
-
-    if (todos.length > 0 && todos.length === completed.length) {
-        updateDailyStreak();
-    }
-}
-
-function toggleComplete(button) {
-    const item = button.closest(".todo-item");
-    item.classList.toggle("completed");
-    checkAllCompleted();
-}
+});
