@@ -84,14 +84,15 @@ live-server .
 
 #### Screenshots (Add at least 3)
 
-![Screenshot1](Add screenshot 1 here with proper name)
-*Add caption explaining what this shows*
+Login Page
+<img width="1919" height="901" alt="Screenshot 2026-02-28 174505" src="https://github.com/user-attachments/assets/8dbb73ea-ec88-402d-87a2-e669dafb7cd8" />
 
-![Screenshot2](Add screenshot 2 here with proper name)
-*Add caption explaining what this shows*
+Home Page
+<img width="1919" height="909" alt="Screenshot 2026-02-28 174549" src="https://github.com/user-attachments/assets/b0e772dc-ae62-4e3a-a3d2-35fbc80cacb5" />
 
-![Screenshot3](Add screenshot 3 here with proper name)
-*Add caption explaining what this shows*
+Connect and compete with friends
+<img width="799" height="878" alt="Screenshot 2026-02-28 174730" src="https://github.com/user-attachments/assets/e9817ba6-a325-4923-8e18-18df2f3f5cbd" />
+
 
 #### Diagrams
 
