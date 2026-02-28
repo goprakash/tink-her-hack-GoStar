@@ -24,26 +24,21 @@
         } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
         onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userRef = doc(db, "users", user.uid);
+                const docSnap = await getDoc(userRef);
 
-            if (!user) {
-                window.location.href = "login.html";
-                return;
-            }
-
-            const userRef = doc(db, "users", user.uid);
-            const docSnap = await getDoc(userRef);
-
-            if (docSnap.exists()) {
-                document.getElementById("streakCount").textContent =
-                    docSnap.data().streak || 0;
-            } else {
-                await setDoc(userRef, {
-                    streak: 0,
-                    lastCompletedDate: null
-                });
+                if (!docSnap.exists()) {
+                    // Create user profile with email so others can search for it
+                    await setDoc(userRef, {
+                        email: user.email.toLowerCase(), // Store lowercase for easy searching
+                        streak: 0,
+                        friends: [],
+                        lastCompletedDate: null
+                    });
+                }
             }
         });
-
         window.logout = function () {
             signOut(auth).then(() => {
                 window.location.href = "login.html";
@@ -53,10 +48,6 @@
     <div class="navbar">
         <h2 style="font-size: 100px;">HabitHub</h2>
         <button onclick="logout()" style="width:100px">Logout</button>
-    </div>
-
-    <div class="container">
-        <h3>Welcome to your Habit Dashboard</h3>
     </div>
 
     <div class="main">
@@ -74,6 +65,26 @@
 
             <div id="todoList"></div>
         </div>
+
+
+        <div class="section">
+            <h3>Find Friends</h3>
+            <div class="todo-input">
+                <input type="email" id="friendSearchInput" placeholder="Enter friend's email...">
+                <button onclick="searchFriend()">Search</button>
+            </div>
+            <div id="searchResults"></div>
+
+            <hr>
+            <h3>My Friends</h3>
+            <div id="friendsList"></div>
+            <div class="section">
+                <h3>🏆 Leaderboard</h3>
+                <div id="leaderboardList">
+                </div>
+            </div>
+        </div>
+
 
     </div>
 

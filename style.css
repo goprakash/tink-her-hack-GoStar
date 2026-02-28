@@ -434,3 +434,9 @@ button:hover {
     color: white;
     text-align: center;
 }
+
+#friendsList .todo-item {
+    background: #f9f9f9;
+    border-left: 5px solid #ff4500; /* Orange accent for streaks */
+    margin-bottom: 5px;
+}
