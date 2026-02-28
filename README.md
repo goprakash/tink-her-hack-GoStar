@@ -13,7 +13,7 @@
 - Member 2: Gopika Prakash -  College of Engineering Trivandrum
 
 ### Hosted Project Link
-[mention your project hosted link here]
+https://goprakash.github.io/tink-her-hack-GoStar/
 
 ### Project Description
 HabitHUB is a gamified social productivity platform designed to help users build lasting habits through accountability. It combines a clean to-do interface with real-time streak tracking and a competitive social leaderboard to turn daily discipline into an engaging experience.
@@ -24,7 +24,6 @@ Many people struggle to maintain consistency with new habits because solo produc
 ### The Solution
 We solve this by introducing "Social Accountability." By allowing users to connect with friends, compare daily streaks, and earn points for completing tasks, HabitHUB transforms mundane chores into a shared journey. If you don't finish your tasks, your streak resets, and you fall behind on the leaderboard—providing the perfect "nudge" to stay productive.
 
----
 
 ## Technical Details
 
@@ -53,7 +52,7 @@ List the key features of your project:
 -Gamified Points: Earn +10 points for every successful day of habit completion.
 
 -Responsive Dashboard: A clean, mobile-friendly UI featuring a personalized welcome and habit stats.
----
+
 
 ## Implementation
 
@@ -103,6 +102,7 @@ The architecture can be broken down into three main layers: the Client Layer, th
 Layer.1. Client Layer (Frontend)This is what the user interacts with in their browser.Technologies: HTML5, CSS3, JavaScript (ES6+).State Management: Handled by the Firebase onAuthStateChanged listener and real-time onSnapshot listeners.Logic: * Calculating streaks (Client-side logic).Sorting the Leaderboard (Array manipulation).Handling input validation for To-Dos and Friend searches.
 2. Service Layer (Firebase BaaS)This layer replaces the traditional "API Server."Firebase Authentication: Handles user sign-up, login, and session persistence. It provides the unique UID used to index all data.Firestore SDK: Acts as the bridge between your code and the database. It handles the "Websocket" connection for real-time updates (e.g., when a friend completes a task, your leaderboard updates instantly).
 3. Data Persistence Layer (Database)This is where the actual JSON-like documents live.Users Collection: Stores profile data, total points, and current streaks.Todos Collection: Stores individual tasks linked to users via their userId.Security Rules: These sit in front of the data to ensure User A cannot delete User B’s tasks.
+
 **Application Workflow:**
 
 ![Workflow](docs/workflow.png)
@@ -124,46 +124,97 @@ todos,Auto-ID,"text, userId, completed (boolean), createdAt"
 ##### Endpoints
 
 **GET /api/endpoint**
-- **Description:** [What it does]
-- **Parameters:**
-  - `param1` (string): [Description]
-  - `param2` (integer): [Description]
-- **Response:**
-```json
+GET /firestore/users/{uid}
+
+Description: Retrieves the profile of a specific user, including their current streak, total points, and friend list.
+
+Parameters:
+
+uid (string): The unique Firebase Authentication ID of the user.
+
+Response:
+
+JSON
 {
   "status": "success",
-  "data": {}
+  "data": {
+    "email": "user@example.com",
+    "streak": 5,
+    "points": 150,
+    "friends": ["uid_123", "uid_456"],
+    "lastCompletedDate": "2026-02-28"
+  }
 }
-```
+POST /firestore/todos
 
-**POST /api/endpoint**
-- **Description:** [What it does]
-- **Request Body:**
-```json
+Description: Adds a new habit or task to the user's daily list.
+
+Request Body:
+
+JSON
 {
-  "field1": "value1",
-  "field2": "value2"
+  "text": "Go for a run",
+  "userId": "current_user_uid",
+  "completed": false,
+  "createdAt": "ServerTimestamp"
 }
-```
-- **Response:**
-```json
+Response:
+
+JSON
 {
   "status": "success",
-  "message": "Operation completed"
+  "message": "Task added successfully",
+  "docId": "auto_generated_id"
 }
-```
+PATCH /firestore/users/{uid}
 
-[Add more endpoints as needed...]
+Description: Updates the user's streak and awards points. This is triggered only when all tasks are marked as completed.
 
----
+Parameters:
 
+uid (string): The unique Firebase Authentication ID.
+
+Request Body:
+
+JSON
+{
+  "streak": 6,
+  "points": 160,
+  "lastCompletedDate": "2026-03-01"
+}
+Response:
+
+JSON
+{
+  "status": "success",
+  "message": "Daily stats updated"
+}
+POST /firestore/users/{uid}/friends
+
+Description: Connects the current user to another user by adding their UID to the friends array.
+
+Request Body:
+
+JSON
+{
+  "friendId": "friend_user_uid"
+}
+Response:
+
+JSON
+{
+  "status": "success",
+  "message": "Connected with friend"
+}
 ### For Mobile Apps:
 
 #### App Flow Diagram
 
 ![App Flow](docs/app-flow.png)
-*Explain the user flow through your application*
-
+1. Entry & AuthenticationLanding: User arrives at index.html.Action: User signs up or logs in via Firebase Auth.Result: onAuthStateChanged triggers. If the user is new, a profile document is initialized in the users collection with streak: 0 and points: 0.
+2. The Habit Dashboard (Main Loop)View: User sees their current streak and their specific To-Do list.Action: User adds a task (addDoc to /todos).Action: User toggles a task as "Complete" (updateDoc).Logic Check: The onSnapshot listener detects the change and runs checkAllCompleted().
+3. The Reward Trigger (Streak Update)Condition: Are all tasks in the list marked completed: true?Gatekeeper: Has the user already updated today? (Checks lastCompletedDate).Success:Points: $+10$ points added to profile.Streak: If yesterday was successful, $Streak + 1$. If not, $Streak = 1$.Database: Profile document in /users/{uid} is updated.
+4.  Social & Competitive LoopSearch: User enters an email in "Find Friends".Connect: User clicks "Connect" $\rightarrow$ Friend's UID is added to the friends array.Leaderboard: The app fetches the streak and points for all UIDs in the friends array + the current user.Display: Users are sorted and rendered with medals (🥇, 🥈, 🥉) based on their ranking.
 #### Installation Guide
 
 **For Android (APK):**
@@ -203,38 +254,41 @@ xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug
 #### Command Reference
 
 **Basic Usage:**
-```bash
-python script.py [options] [arguments]
-```
+bash
+firebase [command] [options]
 
 **Available Commands:**
-- `command1 [args]` - Description of what command1 does
-- `command2 [args]` - Description of what command2 does
-- `command3 [args]` - Description of what command3 does
+firebase login - Authenticate the CLI with your Google account
+
+firebase init - Initialize a Firebase project in the current directory
+
+firebase deploy - Upload local assets to Firebase Hosting
+
+firebase emulators:start - Run a local version of Firebase services for testing
 
 **Options:**
-- `-h, --help` - Show help message and exit
-- `-v, --verbose` - Enable verbose output
-- `-o, --output FILE` - Specify output file path
-- `-c, --config FILE` - Specify configuration file
-- `--version` - Show version information
+-h, --help - Show help message and exit
+
+-v, --version - Show version information
+
+-P, --project ID - Specify a non-default Firebase project ID
+
+--only hosting - Deploy only the web files, ignoring database rules
 
 **Examples:**
 
 ```bash
-# Example 1: Basic usage
-python script.py input.txt
+# Example 1: Basic deployment
+firebase deploy
 
-# Example 2: With verbose output
-python script.py -v input.txt
+# Example 2: Deploying only the web assets
+firebase deploy --only hosting
 
-# Example 3: Specify output file
-python script.py -o output.txt input.txt
+# Example 3: Running a local emulator for Firestore
+firebase emulators:start --only firestore
 
-# Example 4: Using configuration
-python script.py -c config.json --verbose input.txt
-```
-
+# Example 4: Switching to a production project environment
+firebase use production-project-id
 #### Demo Output
 
 **Example 1: Basic Processing**
@@ -297,14 +351,10 @@ python script.py -v --format json data.json
 ## Project Demo
 
 ### Video
-[Add your demo video link here - YouTube, Google Drive, etc.]
+[[Add your demo video link here - YouTube, Google Drive, etc.]
+](https://drive.google.com/file/d/1t2p0t1tvuMAh_PdzF71ava8WWkulnAcH/view?usp=drivesdk)
+working of our app
 
-*Explain what the video demonstrates - key features, user flow, technical highlights*
-
-### Additional Demos
-[Add any extra demo materials/links - Live site, APK download, online demo, etc.]
-
----
 
 ## AI Tools Used (Optional - For Transparency Bonus)
 
@@ -343,7 +393,7 @@ If you used AI tools during development, document them here for transparency:Gem
 
 ## License
 
-This project is licensed under the [LICENSE_NAME] License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the [LICENSE_NAME] License - see the [MIT](LICENSE) file for details.
 
 **Common License Options:**
 - MIT License (Permissive, widely used)
