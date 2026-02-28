@@ -133,3 +133,25 @@ function toggleComplete(button) {
     item.classList.toggle("completed");
     checkAllCompleted();
 }
+import { auth, db } from "./firebase.js";
+import {
+    collection,
+    addDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+window.addTodo = async function () {
+
+    const text = document.getElementById("todoText").value;
+
+    if (!text) return;
+
+    const user = auth.currentUser;
+
+    await addDoc(collection(db, "habits"), {
+        uid: user.uid,
+        text: text,
+        createdAt: new Date()
+    });
+
+    alert("Habit added!");
+};

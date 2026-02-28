@@ -6,7 +6,7 @@ from firebase_admin import credentials, firestore
 app = FastAPI()
 
 # 🔥 Firebase setup
-cred = credentials.Certificate("serviceAccountKey.json")
+cred = credentials.Certificate("./creds/serviceAccountKey.json")
 firebase_admin.initialize_app(cred)
 
 db = firestore.client()
