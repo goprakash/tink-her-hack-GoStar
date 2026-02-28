@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>HabitHub - Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <script type="module">
+        import { auth } from "./firebase.js";
+        import { onAuthStateChanged } from
+            "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) return;
+
+            const userRef = doc(db, "users", user.uid);
+            const docSnap = await getDoc(userRef);
+
+            if (docSnap.exists()) {
+                document.getElementById("streakCount").textContent =
+                    docSnap.data().streak || 0;
+            } else {
+                await setDoc(userRef, {
+                    streak: 0,
+                    lastCompletedDate: null
+                });
+            }
+        });
+        import { auth } from "./firebase.js";
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, setDoc }
+            from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "login.html";
+            }
+        });
+
+        window.logout = function () {
+            signOut(auth).then(() => {
+                window.location.href = "login.html";
+            });
+        };
+    </script>
+
+    <div class="navbar">
+        <h2>HabitHub</h2>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <h3>Welcome to your Habit Dashboard</h3>
+    </div>
+
+    <div class="main">
+
+        <div class="section">
+            <div class="streak-box">
+                🔥Streak: <span id="streakCount">0</span>
+            </div>
+            <h3>To-Do List</h3>
+
+            <div class="todo-input">
+                <input type="text" id="todoText" placeholder="Enter a task...">
+                <button onclick="addTodo()">Add</button>
+            </div>
+
+            <div id="todoList"></div>
+        </div>
+
+    </div>
+
+    <script>
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+        }
+    </script>
+
+    <script src="script.js"></script>
+    <script type="module" src="firebase.js"></script>
+
+</body>
+
+</html>

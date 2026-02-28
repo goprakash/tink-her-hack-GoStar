@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Habit Tracker Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="navbar">
+        <h2>HabitHub</h2>
+        <div class="container">
+            <h2 id="formTitle" style="color:rgb(0, 51, 39)">Login</h2>
+
+            <form id="authForm">
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="email" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" required>
+                </div>
+
+                <button type="submit" id="submitBtn">Login</button>
+                <p id="toggleText" style="color:rgba(12, 225, 236, 0.514)">
+                    Don't have an account?
+                    <a href="#" id="toggleLink">Sign Up</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth } from "./firebase.js";
+        import {
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword
+        } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+        const form = document.getElementById("authForm");
+        const toggleLink = document.getElementById("toggleLink");
+        const formTitle = document.getElementById("formTitle");
+        const submitBtn = document.getElementById("submitBtn");
+        const toggleText = document.getElementById("toggleText");
+
+        let isLogin = true;
+
+        toggleLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            isLogin = !isLogin;
+
+            if (isLogin) {
+                formTitle.textContent = "Login";
+                submitBtn.textContent = "Login";
+                toggleText.innerHTML = `Don't have an account? <a href="#" id="toggleLink">Sign Up</a>`;
+            } else {
+                formTitle.textContent = "Sign Up";
+                submitBtn.textContent = "Create Account";
+                toggleText.innerHTML = `Already have an account? <a href="#" id="toggleLink">Login</a>`;
+            }
+        });
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                if (isLogin) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                }
+
+                window.location.href = "home.html";
+
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    </script>
+    
+</body>
+
+</html>

@@ -6,11 +6,11 @@
 
 ## Basic Details
 
-### Team Name: Gostar
+### Team Name: [Name]
 
 ### Team Members
-- Member 1: Christta Ann Mathew - College Of Engineering Trivandrum
-- Member 2: Gopika Prakash - College Of Engineering Trivandrum
+- Member 1: [Name] - [College]
+- Member 2: [Name] - [College]
 
 ### Hosted Project Link
 [mention your project hosted link here]
@@ -19,7 +19,7 @@
 [2-3 lines about what your project does]
 
 ### The Problem statement
-
+[What problem are you solving?]
 
 ### The Solution
 [How are you solving it?]
