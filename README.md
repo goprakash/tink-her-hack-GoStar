@@ -2,27 +2,27 @@
   <img src="./img.png" alt="Project Banner" width="100%">
 </p>
 
-# [Project Name] 🎯
+# HaBitHUB 🎯
 
 ## Basic Details
 
-### Team Name: [Name]
+### Team Name: Gostar
 
 ### Team Members
-- Member 1: [Name] - [College]
-- Member 2: [Name] - [College]
+- Member 1: Christta Ann Mathew - College of Engineering Trivandrum
+- Member 2: Gopika Prakash -  College of Engineering Trivandrum
 
 ### Hosted Project Link
 [mention your project hosted link here]
 
 ### Project Description
-[2-3 lines about what your project does]
+HabitHUB is a gamified social productivity platform designed to help users build lasting habits through accountability. It combines a clean to-do interface with real-time streak tracking and a competitive social leaderboard to turn daily discipline into an engaging experience.
 
 ### The Problem statement
-[What problem are you solving?]
+Many people struggle to maintain consistency with new habits because solo productivity often feels lonely and lacks immediate gratification. Traditional to-do apps are functional but fail to provide the social motivation or "fun factor" needed to stay committed over long periods.
 
 ### The Solution
-[How are you solving it?]
+We solve this by introducing "Social Accountability." By allowing users to connect with friends, compare daily streaks, and earn points for completing tasks, HabitHUB transforms mundane chores into a shared journey. If you don't finish your tasks, your streak resets, and you fall behind on the leaderboard—providing the perfect "nudge" to stay productive.
 
 ---
 
@@ -31,26 +31,28 @@
 ### Technologies/Components Used
 
 **For Software:**
-- Languages used: [e.g., JavaScript, Python, Java]
-- Frameworks used: [e.g., React, Django, Spring Boot]
-- Libraries used: [e.g., axios, pandas, JUnit]
-- Tools used: [e.g., VS Code, Git, Docker]
+- Languages used: HTML5, CSS3, JavaScript (ES6+)
 
-**For Hardware:**
-- Main components: [List main components]
-- Specifications: [Technical specifications]
-- Tools required: [List tools needed]
+-Frameworks used: Firebase (BaaS)
 
----
+-Libraries used: Firebase Auth, Firestore (NoSQL Database)
+
+-Tools used: VS Code, Git, Firebase Console
 
 ## Features
 
 List the key features of your project:
-- Feature 1: [Description]
-- Feature 2: [Description]
-- Feature 3: [Description]
-- Feature 4: [Description]
+- Real-time To-Do List: Create, complete, and delete tasks with instant database syncing.
 
+-Dynamic Streak System: Tracks daily consistency. Streaks increment only when all daily tasks are checked off.
+
+-Friend Search & Connect: Find friends by email and add them to your inner circle.
+
+-Live Leaderboard: A competitive ranking system that sorts you and your friends by Points and streaks.
+
+-Gamified Points: Earn +10 points for every successful day of habit completion.
+
+-Responsive Dashboard: A clean, mobile-friendly UI featuring a personalized welcome and habit stats.
 ---
 
 ## Implementation
@@ -59,23 +61,22 @@ List the key features of your project:
 
 #### Installation
 ```bash
-[Installation commands - e.g., npm install, pip install -r requirements.txt]
+# Clone the repository
+git clone https://github.com/goprakash/tink-her-hack-GoStar.git
+
+# Navigate to the directory
+cd HabitHub
+
+# No heavy installations required (CDN-based Firebase), but you can use a local server
+npm install -g live-server
 ```
 
 #### Run
 ```bash
-[Run commands - e.g., npm start, python app.py]
+# Start a local development server
+live-server .
 ```
 
-### For Hardware:
-
-#### Components Required
-[List all components needed with specifications]
-
-#### Circuit Setup
-[Explain how to set up the circuit]
-
----
 
 ## Project Documentation
 
@@ -97,47 +98,27 @@ List the key features of your project:
 **System Architecture:**
 
 ![Architecture Diagram](docs/architecture.png)
-*Explain your system architecture - components, data flow, tech stack interaction*
-
+The architecture can be broken down into three main layers: the Client Layer, the Backend-as-a-Service (BaaS) Layer, and the Data Persistence 
+Layer.1. Client Layer (Frontend)This is what the user interacts with in their browser.Technologies: HTML5, CSS3, JavaScript (ES6+).State Management: Handled by the Firebase onAuthStateChanged listener and real-time onSnapshot listeners.Logic: * Calculating streaks (Client-side logic).Sorting the Leaderboard (Array manipulation).Handling input validation for To-Dos and Friend searches.
+2. Service Layer (Firebase BaaS)This layer replaces the traditional "API Server."Firebase Authentication: Handles user sign-up, login, and session persistence. It provides the unique UID used to index all data.Firestore SDK: Acts as the bridge between your code and the database. It handles the "Websocket" connection for real-time updates (e.g., when a friend completes a task, your leaderboard updates instantly).
+3. Data Persistence Layer (Database)This is where the actual JSON-like documents live.Users Collection: Stores profile data, total points, and current streaks.Todos Collection: Stores individual tasks linked to users via their userId.Security Rules: These sit in front of the data to ensure User A cannot delete User B’s tasks.
 **Application Workflow:**
 
 ![Workflow](docs/workflow.png)
-*Add caption explaining your workflow*
+The Data Flow (How it works)Authentication: User logs in $\rightarrow$ Firebase Auth returns a Token $\rightarrow$ Frontend saves the UID.Task Completion: User clicks "Done" $\rightarrow$ Frontend sends updateDoc to Firestore $\rightarrow$ Firestore triggers a "Change" event.Real-time Update: The onSnapshot listener in the Frontend hears the "Change" $\rightarrow$ It triggers checkAllCompleted() $\rightarrow$ If all are done, it updates the streak in the Users Collection.Social Sync: Because your friends' Leaderboard is also listening to the Users Collection, their screen updates with your new streak immediately.
 
----
 
-### For Hardware:
-
-#### Schematic & Circuit
-
-![Circuit](Add your circuit diagram here)
-*Add caption explaining connections*
-
-![Schematic](Add your schematic diagram here)
-*Add caption explaining the schematic*
-
-#### Build Photos
-
-![Team](Add photo of your team here)
-
-![Components](Add photo of your components here)
-*List out all components shown*
-
-![Build](Add photos of build process here)
-*Explain the build steps*
-
-![Final](Add photo of final product here)
-*Explain the final build*
-
----
 
 ## Additional Documentation
-
 ### For Web Projects with Backend:
 
 #### API Documentation
 
-**Base URL:** `https://api.yourproject.com`
+Collection,Document ID,Fields
+users,UID,"email, streak, points, friends (array), lastCompletedDate"
+todos,Auto-ID,"text, userId, completed (boolean), createdAt"
+
+**Base URL:** no single url
 
 ##### Endpoints
 
@@ -215,52 +196,6 @@ xcodebuild -workspace App.xcworkspace -scheme App -configuration Debug
 
 ---
 
-### For Hardware Projects:
-
-#### Bill of Materials (BOM)
-
-| Component | Quantity | Specifications | Price | Link/Source |
-|-----------|----------|----------------|-------|-------------|
-| Arduino Uno | 1 | ATmega328P, 16MHz | ₹450 | [Link] |
-| LED | 5 | Red, 5mm, 20mA | ₹5 each | [Link] |
-| Resistor | 5 | 220Ω, 1/4W | ₹1 each | [Link] |
-| Breadboard | 1 | 830 points | ₹100 | [Link] |
-| Jumper Wires | 20 | Male-to-Male | ₹50 | [Link] |
-| [Add more...] | | | | |
-
-**Total Estimated Cost:** ₹[Amount]
-
-#### Assembly Instructions
-
-**Step 1: Prepare Components**
-1. Gather all components listed in the BOM
-2. Check component specifications
-3. Prepare your workspace
-![Step 1](images/assembly-step1.jpg)
-*Caption: All components laid out*
-
-**Step 2: Build the Power Supply**
-1. Connect the power rails on the breadboard
-2. Connect Arduino 5V to breadboard positive rail
-3. Connect Arduino GND to breadboard negative rail
-![Step 2](images/assembly-step2.jpg)
-*Caption: Power connections completed*
-
-**Step 3: Add Components**
-1. Place LEDs on breadboard
-2. Connect resistors in series with LEDs
-3. Connect LED cathodes to GND
-4. Connect LED anodes to Arduino digital pins (2-6)
-![Step 3](images/assembly-step3.jpg)
-*Caption: LED circuit assembled*
-
-**Step 4: [Continue for all steps...]**
-
-**Final Assembly:**
-![Final Build](images/final-build.jpg)
-*Caption: Completed project ready for testing*
-
----
 
 ### For Scripts/CLI Tools:
 
@@ -372,9 +307,8 @@ python script.py -v --format json data.json
 
 ## AI Tools Used (Optional - For Transparency Bonus)
 
-If you used AI tools during development, document them here for transparency:
+If you used AI tools during development, document them here for transparency:Gemini and chatgpt
 
-**Tool Used:** [e.g., GitHub Copilot, v0.dev, Cursor, ChatGPT, Claude]
 
 **Purpose:** [What you used it for]
 - Example: "Generated boilerplate React components"
@@ -400,9 +334,9 @@ If you used AI tools during development, document them here for transparency:
 
 ## Team Contributions
 
-- [Name 1]: [Specific contributions - e.g., Frontend development, API integration, etc.]
-- [Name 2]: [Specific contributions - e.g., Backend development, Database design, etc.]
-- [Name 3]: [Specific contributions - e.g., UI/UX design, Testing, Documentation, etc.]
+- Christta Ann Mathew: Backend integration with Firebase, Streak logic implementation, and API/Database management.
+
+-Gopika Prakash: Frontend UI/UX Design, CSS styling, and Leaderboard rendering logic.
 
 ---
 
